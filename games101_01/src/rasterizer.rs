@@ -17,11 +17,11 @@ pub enum Primitive{
     Triangle
 }
 
-pub struct pos_buf_id{
+pub struct PosBufId {
     pub pos_id:i32
 }
 
-pub struct ind_buf_id{
+pub struct IndBufId {
     pub ind_id:i32
 }
 
@@ -41,9 +41,9 @@ pub struct Rasterizer{
 impl Rasterizer{
     pub fn new(w:i32,h:i32)->Rasterizer{
         Rasterizer{
-            model:Matrix4f::from([0f32;4]),
-            view:Matrix4f::from([0f32;4]),
-            projection:Matrix4f::from([0f32;4]),
+            model:Matrix4f::zero(),
+            view:Matrix4f::zero(),
+            projection:Matrix4f::zero(),
             pos_buf:HashMap::new(),
             ind_buf:HashMap::new(),
             frame_buf:Vec::new(),
@@ -54,16 +54,16 @@ impl Rasterizer{
         }
     }
 
-    pub fn load_positions(&mut self,positions:Vec<Vector3f>)->pos_buf_id{
+    pub fn load_positions(&mut self,positions:Vec<Vector3f>)-> PosBufId {
         let id = self.get_next_id();
         self.pos_buf.insert(id,positions);
-        pos_buf_id{pos_id:id}
+        PosBufId {pos_id:id}
     }
 
-    pub fn load_indices(&mut self,indices:Vec<Vector3i>)->ind_buf_id{
+    pub fn load_indices(&mut self,indices:Vec<Vector3i>)-> IndBufId {
         let id = self.get_next_id();
         self.ind_buf.insert(id,indices);
-        ind_buf_id{ind_id:id}
+        IndBufId {ind_id:id}
     }
 
     pub fn frame_buffer(&self)->&Vec<Vector3f>{
@@ -88,7 +88,7 @@ impl Rasterizer{
         }
     }
 
-    pub fn draw(&mut self,pos_buffer:pos_buf_id,ind_buffer:ind_buf_id,_type:Primitive){
+    pub fn draw(&mut self, pos_buffer: PosBufId, ind_buffer: IndBufId, _type:Primitive){
 
     }
 
@@ -139,7 +139,7 @@ fn to_vec4(v3:&Vector3f,w:f32)->Vector4f{
 
 fn fabsf32(f:f32)->f32{
     if f<0.0{
-        f * -1.0
+        return -f;
     }
     f
 }
