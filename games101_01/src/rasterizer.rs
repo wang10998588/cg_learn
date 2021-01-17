@@ -101,7 +101,7 @@ impl Rasterizer{
         self.frame_buf[ind as usize] = color;
     }
 
-    fn draw_line(&self,begin:Vector3f,end:Vector3f){
+    fn draw_line(&mut self,begin:Vector3f,end:Vector3f){
         let Vector3f{x:x1,y:y1, .. } = begin;
         let Vector3f { x:x2,y:y2,..} = end;
         let line_color = Vector3f::new(255.0,255.0,255.0);
@@ -113,10 +113,33 @@ impl Rasterizer{
         let px = 2.0*dy1-dx1;
         let py = 2.0*dx1-dy1;
 
+        let mut x;
+        let mut y;
+        let mut xe;
+        if dy1<=dx1{
+            if dx>=0.0{
+                x = x1;
+                y = y1;
+                xe = x2;
+            }else {
+                x = x2;
+                y = y2;
+                xe = x1;
+            }
+
+            let point = Vector3i::new(x as i32,y as i32,1);
+            self.set_pixel(&point,line_color);
+/*
+            for  in  {
+
+            }*/
+        }else{
+
+        }
 
     }
 
-    fn rasterize_wireframe(&self,t:&Triangle){
+    fn rasterize_wireframe(&mut self,t:&Triangle){
         self.draw_line(t.c(),t.a());
         self.draw_line(t.c(),t.b());
         self.draw_line(t.b(),t.a());
