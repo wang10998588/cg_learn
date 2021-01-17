@@ -81,9 +81,15 @@ impl Rasterizer{
                 }
             },
             Buffers::Depth=>{
-
+                for i in 0..self.depth_buf.len() {
+                    self.depth_buf[i] = 0f32;
+                }
             }
         }
+    }
+
+    pub fn draw(&mut self,pos_buffer:pos_buf_id,ind_buffer:ind_buf_id,_type:Primitive){
+
     }
 
     pub fn set_pixel(&mut self,point:&Vector3i,color:Vector3f){
@@ -96,11 +102,24 @@ impl Rasterizer{
     }
 
     fn draw_line(&self,begin:Vector3f,end:Vector3f){
+        let Vector3f{x:x1,y:y1, .. } = begin;
+        let Vector3f { x:x2,y:y2,..} = end;
+        let line_color = Vector3f::new(255.0,255.0,255.0);
+
+        let dx = x2-x1;
+        let dy = y2-y1;
+        let dx1=fabsf32(dx);
+        let dy1=fabsf32(dy);
+        let px = 2.0*dy1-dx1;
+        let py = 2.0*dx1-dy1;
+
 
     }
 
     fn rasterize_wireframe(&self,t:&Triangle){
-
+        self.draw_line(t.c(),t.a());
+        self.draw_line(t.c(),t.b());
+        self.draw_line(t.b(),t.a());
     }
 
     fn get_index(&self,x:i32,y:i32)->i32{
@@ -112,4 +131,15 @@ impl Rasterizer{
         self.next_id+=1;
         ret
     }
+}
+
+fn to_vec4(v3:&Vector3f,w:f32)->Vector4f{
+    Vector4f::new(v3.x,v3.y,v3.z,w)
+}
+
+fn fabsf32(f:f32)->f32{
+    if f<0.0{
+        f * -1.0
+    }
+    f
 }
