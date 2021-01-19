@@ -26,9 +26,9 @@ pub struct IndBufId {
 }
 
 pub struct Rasterizer{
-    model:Matrix4f,
-    view:Matrix4f,
-    projection:Matrix4f,
+    model:Option<Matrix4f>,
+    view:Option<Matrix4f>,
+    projection:Option<Matrix4f>,
     pos_buf:HashMap<i32,Vec<Vector3f>>,
     ind_buf:HashMap<i32,Vec<Vector3i>>,
     frame_buf:Vec<Vector3f>,
@@ -41,9 +41,9 @@ pub struct Rasterizer{
 impl Rasterizer{
     pub fn new(w:i32,h:i32)->Rasterizer{
         Rasterizer{
-            model:Matrix4f::zero(),
-            view:Matrix4f::zero(),
-            projection:Matrix4f::zero(),
+            model:Option::None,
+            view:Option::None,
+            projection:Option::None,
             pos_buf:HashMap::new(),
             ind_buf:HashMap::new(),
             frame_buf:Vec::new(),
@@ -69,9 +69,9 @@ impl Rasterizer{
     pub fn frame_buffer(&self)->&Vec<Vector3f>{
         &self.frame_buf
     }
-    pub fn set_model(&mut self,m:Matrix4f){self.model = m;}
-    pub fn set_view(&mut self,v:Matrix4f){self.view = v;}
-    pub fn set_projection(&mut self,p:Matrix4f){self.projection = p;}
+    pub fn set_model(&mut self,m:Matrix4f){self.model = Some(m);}
+    pub fn set_view(&mut self,v:Matrix4f){self.view = Some(v);}
+    pub fn set_projection(&mut self,p:Matrix4f){self.projection = Some(p);}
 
     pub fn clear(&mut self,buff:Buffers){
         match buff {
@@ -106,35 +106,71 @@ impl Rasterizer{
         let Vector3f { x:x2,y:y2,..} = end;
         let line_color = Vector3f::new(255.0,255.0,255.0);
 
-        let dx = x2-x1;
-        let dy = y2-y1;
-        let dx1=fabsf32(dx);
-        let dy1=fabsf32(dy);
-        let px = 2.0*dy1-dx1;
-        let py = 2.0*dx1-dy1;
+        let dx = (x2-x1) as i32;
+        let dy = (y2-y1) as i32;
+        let dx1=dx.abs();
+        let dy1=dy.abs();
+        let mut  px = 2*dy1-dx1;
+        let mut py = 2*dx1-dy1;
 
-        let mut x;
-        let mut y;
-        let mut xe;
+        let mut x:i32;
+        let mut y:i32;
         if dy1<=dx1{
-            if dx>=0.0{
-                x = x1;
-                y = y1;
-                xe = x2;
+
+            let mut xe:i32;
+            if dx>=0{
+                x = x1 as i32;
+                y = y1 as i32;
+                xe = x2 as i32;
             }else {
-                x = x2;
-                y = y2;
-                xe = x1;
+                x = x2 as i32;
+                y = y2 as i32;
+                xe = x1 as i32;
             }
 
-            let point = Vector3i::new(x as i32,y as i32,1);
-            self.set_pixel(&point,line_color);
-/*
-            for  in  {
+            self.set_pixel(&Vector3i::new(x as i32,y as i32,1),line_color);
 
-            }*/
+            while x<xe {
+                x+=1;
+                if px<0{
+                    px = px+2*dy1;
+                }else{
+                    if (dx<0&&dy<0)||(dx>0&&dy>0) {
+                        y+=1;
+                    }else{
+                        y-=1;
+                    }
+                    px = px + 2*(dy1-dx1);
+                }
+                self.set_pixel(&Vector3i::new(x,y,1),line_color);
+            }
         }else{
+            let mut ye:i32;
+            if dy>=0{
+                x = x1 as i32;
+                y = y1 as i32;
+                ye = y2 as i32;
+            }else{
+                x = x2 as i32;
+                y= y2 as i32;
+                ye = y1 as i32;
+            }
+            self.set_pixel(&Vector3i::new(x as i32,y as i32,1),line_color);
 
+            while y<ye {
+                y+=1;
+                if py<=0{
+                    py=py+2*dx1;
+                }else{
+                    if (dx<0&&dy<0)||(dx>0&& dy>0){
+                        x+=1;
+                    }else{
+                        x-=1;
+                    }
+                    py = py+2*(dx1-dy1);
+                }
+                self.set_pixel(&Vector3i::new(x,y,1),line_color);
+            }
         }
 
     }
@@ -158,11 +194,4 @@ impl Rasterizer{
 
 fn to_vec4(v3:&Vector3f,w:f32)->Vector4f{
     Vector4f::new(v3.x,v3.y,v3.z,w)
-}
-
-fn fabsf32(f:f32)->f32{
-    if f<0.0{
-        return -f;
-    }
-    f
 }
