@@ -89,7 +89,52 @@ impl Rasterizer{
     }
 
     pub fn draw(&mut self, pos_buffer: PosBufId, ind_buffer: IndBufId, _type:Primitive){
+        match _type {
+            Primitive::Triangle=>{
 
+            },
+            Primitive::Line=>panic!("Drawing primitives other than triangle is not implemented yet!")
+        }
+
+
+        let buf = &self.pos_buf[&pos_buffer.pos_id];
+        let ind = &self.ind_buf[&ind_buffer.ind_id];
+
+        let f1 = (100f32-0.1f32)/2.0f32;
+        let f2 = (100f32+0.1f32)/2.0f32;
+
+        let mvp = self.projection.unwrap() * self.view.unwrap() * self.model.unwrap();
+
+        for i in ind.iter() {
+            let mut v:[Vector4f;3]=[
+                mvp * to_vec4(&buf[i[0]as usize],1.0f32),
+                mvp * to_vec4(&buf[i[1]as usize],1.0f32),
+                mvp * to_vec4(&buf[i[2]as usize],1.0f32)
+            ];
+
+            for vec in v.iter_mut() {
+                *vec /= vec.w;
+            }
+
+            for vert in v.iter_mut() {
+                vert.x = 0.5f32*(self.width as f32)*(vert.x + 1.0f32);
+                vert.y = 0.5f32*(self.height as f32)*(vert.y + 1.0f32);
+                vert.z = vert.z + f1 + f2;
+            }
+
+            let mut t = Triangle::new();
+            for ind in 0..3 {
+                t.set_vertex(ind,v[ind as usize].truncate());
+                t.set_vertex(ind,v[ind as usize].truncate());
+                t.set_vertex(ind,v[ind as usize].truncate());
+            }
+
+            t.set_color(0,255.0,0.0,0.0);
+            t.set_color(1,0.0,255.0,0.0);
+            t.set_color(2,0.0,0.0,255.0);
+
+            self.rasterize_wireframe(&t);
+        }
     }
 
     pub fn set_pixel(&mut self,point:&Vector3i,color:Vector3f){
