@@ -46,8 +46,8 @@ impl Rasterizer{
             projection:Option::None,
             pos_buf:HashMap::new(),
             ind_buf:HashMap::new(),
-            frame_buf:Vec::new(),
-            depth_buf:Vec::new(),
+            frame_buf:vec![Vector3f::zero(); (w * h) as usize],
+            depth_buf:vec![0.0; (w * h) as usize],
             width:w,
             height:h,
             next_id:0
