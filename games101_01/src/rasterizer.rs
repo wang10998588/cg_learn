@@ -162,7 +162,7 @@ impl Rasterizer{
         let mut y:i32;
         if dy1<=dx1{
 
-            let mut xe:i32;
+            let xe:i32;
             if dx>=0{
                 x = x1 as i32;
                 y = y1 as i32;
@@ -190,7 +190,7 @@ impl Rasterizer{
                 self.set_pixel(&Vector3i::new(x,y,1),line_color);
             }
         }else{
-            let mut ye:i32;
+            let ye:i32;
             if dy>=0{
                 x = x1 as i32;
                 y = y1 as i32;
