@@ -96,7 +96,6 @@ impl Rasterizer{
             Primitive::Line=>panic!("Drawing primitives other than triangle is not implemented yet!")
         }
 
-
         let buf = &self.pos_buf[&pos_buffer.pos_id];
         let ind = &self.ind_buf[&ind_buffer.ind_id];
 
@@ -105,6 +104,7 @@ impl Rasterizer{
 
         let mvp = self.projection.unwrap() * self.view.unwrap() * self.model.unwrap();
 
+        let mut t_buf = Vec::new();
         for i in ind.iter() {
             let mut v:[Vector4f;3]=[
                 mvp * to_vec4(&buf[i[0]as usize],1.0f32),
@@ -133,8 +133,13 @@ impl Rasterizer{
             t.set_color(1,0.0,255.0,0.0);
             t.set_color(2,0.0,0.0,255.0);
 
-            self.rasterize_wireframe(&t);
+            t_buf.push(t);
         }
+
+        for t in t_buf.iter() {
+            self.rasterize_wireframe(t);
+        }
+
     }
 
     pub fn set_pixel(&mut self,point:&Vector3i,color:Vector3f){
