@@ -1,9 +1,9 @@
 mod rasterizer;
 mod triangle;
 
-use cgmath::Vector3;
+use cgmath::{Vector3, Matrix4, SquareMatrix};
 use cgmath::Matrix3;
-use crate::rasterizer::Rasterizer;
+use crate::rasterizer::{Rasterizer, Buffers};
 
 /*
 fn run() -> opencv::Result<()> {
@@ -31,6 +31,11 @@ fn run() -> opencv::Result<()> {
     Ok(())
 }
 */
+fn get_view_matrix(eye_pos:&Vector3<f32>)->Matrix4<f32>{
+    let view = Matrix4::identity();
+
+}
+
 
 fn main() {
     let angle = 0f32;
@@ -51,6 +56,13 @@ fn main() {
     r.load_positions(pos);
     r.load_indices(ind);
 
+    let mut key = 0;
+    let mut frame_count = 0;
+
+    while key != 27 {
+        //r.clear(Buffers::Color|Buffers::Depth);
+        //r.set_model()
+    }
     /*let mut inputArg = String::new();
     std::io::stdin().read_line(&mut inputArg);*/
 
