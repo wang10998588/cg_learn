@@ -3,6 +3,7 @@ mod triangle;
 
 use cgmath::Vector3;
 use cgmath::Matrix3;
+use crate::rasterizer::Rasterizer;
 
 /*
 fn run() -> opencv::Result<()> {
@@ -42,7 +43,13 @@ fn main() {
 
     }
 
-
+    let mut r = Rasterizer::new(700,700);
+    let eye_pos = Vector3::new(0f32,0f32,5f32);
+    let pos = vec![Vector3::new(2f32,0f32,-2f32)
+                   ,Vector3::new(0f32,2f32,-2f32),Vector3::new(-2f32,0f32,-2f32)];
+    let ind = vec![Vector3::new(0,1,2)];
+    r.load_positions(pos);
+    r.load_indices(ind);
 
     /*let mut inputArg = String::new();
     std::io::stdin().read_line(&mut inputArg);*/
