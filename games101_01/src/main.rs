@@ -1,13 +1,16 @@
 mod rasterizer;
 mod triangle;
 
-use opencv::{highgui,core};
+use core::ffi::c_void;
+use opencv::{highgui, videoio};
 use cgmath::{Vector3, Matrix4, SquareMatrix};
 use cgmath::Matrix3;
 use crate::rasterizer::{Rasterizer, Buffers, Primitive};
-use opencv::core::{Size, CV_32FC3, Mat};
+use opencv::core::{Size, CV_32FC3, Mat, MatTraitManual, Mat_AUTO_STEP, CV_8UC3, MatTrait};
+use opencv::videoio::VideoCaptureTrait;
+use opencv::highgui::imshow;
 
-/*
+
 fn run() -> opencv::Result<()> {
     let window = "video capture";
     highgui::named_window(window, 1)?;
@@ -20,7 +23,7 @@ fn run() -> opencv::Result<()> {
         panic!("Unable to open default camera!");
     }
     loop {
-        let mut frame = core::Mat::default()?;
+        let mut frame = Mat::default()?;
         cam.read(&mut frame)?;
         if frame.size()?.width > 0 {
             highgui::imshow(window, &mut frame)?;
@@ -32,7 +35,7 @@ fn run() -> opencv::Result<()> {
     }
     Ok(())
 }
-*/
+
 fn get_view_matrix(eye_pos:&Vector3<f32>)->Matrix4<f32>{
     let mut view = Matrix4::identity();
     let mut translate = Matrix4::new(
@@ -67,6 +70,7 @@ fn get_projection_matrix(eye_fov:f32,aspect_ratio:f32,zNear:f32,zFar:f32)->Matri
 
 
 fn main() {
+    //run();
     let angle = 0f32;
     let mut command_line = false;
     let filename = String::from("output.png");
@@ -79,6 +83,7 @@ fn main() {
 
     let mut r = Rasterizer::new(700,700);
     let eye_pos = Vector3::new(0f32,0f32,5f32);
+
     let pos = vec![Vector3::new(2f32,0f32,-2f32)
                    ,Vector3::new(0f32,2f32,-2f32),Vector3::new(-2f32,0f32,-2f32)];
     let ind = vec![Vector3::new(0,1,2)];
@@ -89,17 +94,23 @@ fn main() {
     let mut frame_count = 0;
 
     while key != 27 {
-        //r.clear(Buffers::Color|Buffers::Depth);
+        r.clear(Buffers::Color);
+        r.clear(Buffers::Depth);
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(&eye_pos));
         r.set_projection(get_projection_matrix(45.0,1.0,0.1,50.0));
 
         r.draw(&pos_id,&ind_id,Primitive::Triangle);
 
-        //core::Mat::new_size_with_data(Size::new(700,700),CV_32FC3,r.frame_buffer())
-        let mut image = Mat::default().unwrap();
+        let mut image;
+        //let mut oimage:Mat = Mat::default().unwrap();
+        unsafe {
+            image = Mat::new_rows_cols_with_data(700, 700, CV_32FC3, r.frame_buffer().as_mut_ptr() as *mut c_void, Mat_AUTO_STEP).unwrap();
+        }
 
-        highgui::imshow("",&mut image);
+        //image.convert_to(&mut oimage,CV_8UC3,0.09,0.0);
+
+        highgui::imshow("run run",&mut image);
 
         frame_count+=1;
         println!("frame count: {}",frame_count);

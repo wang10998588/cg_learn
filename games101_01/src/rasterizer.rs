@@ -66,8 +66,8 @@ impl Rasterizer{
         IndBufId {ind_id:id}
     }
 
-    pub fn frame_buffer(&self)->&Vec<Vector3f>{
-        &self.frame_buf
+    pub fn frame_buffer(&mut self)->&mut Vec<Vector3f>{
+        &mut self.frame_buf
     }
     pub fn set_model(&mut self,m:Matrix4f){self.model = Some(m);}
     pub fn set_view(&mut self,v:Matrix4f){self.view = Some(v);}
