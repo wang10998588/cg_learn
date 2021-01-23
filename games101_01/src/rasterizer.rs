@@ -88,7 +88,7 @@ impl Rasterizer{
         }
     }
 
-    pub fn draw(&mut self, pos_buffer: PosBufId, ind_buffer: IndBufId, _type:Primitive){
+    pub fn draw(&mut self, pos_buffer: &PosBufId, ind_buffer: &IndBufId, _type:Primitive){
         match _type {
             Primitive::Triangle=>{
 
