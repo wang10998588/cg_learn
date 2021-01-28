@@ -8,4 +8,8 @@ edition = "2018"
 
 [dependencies]
 cgmath = "0.17.0"
-opencv = {version = "0.47", default-features = false, features = ["opencv-34", "buildtime-bindgen"]}
+#opencv = {version = "0.47", default-features = false, features = ["opencv-34", "buildtime-bindgen"]}
+[dependencies.sdl2]
+version = "0.34.3"
+features = ["static-link"]
+default-features = false
