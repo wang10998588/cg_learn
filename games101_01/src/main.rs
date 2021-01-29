@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 mod rasterizer;
 mod triangle;
 use crate::rasterizer::{Rasterizer, Buffers, Primitive};
@@ -84,7 +86,7 @@ fn main() {
 
     }
 
-    let mut r = Rasterizer::new(720,720);
+    let mut r = Rasterizer::new(700,700);
     let eye_pos = Vector3::new(0f32,0f32,5f32);
 
     let pos = vec![Vector3::new(2f32,0f32,-2f32)
@@ -100,14 +102,14 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem.window("run run",720,720)
+    let window = video_subsystem.window("run run",700,700)
         .position_centered()
         .vulkan()
         .build()
         .map_err(|e|e.to_string()).unwrap();
     let mut canvas = window.into_canvas().build().map_err(|e|e.to_string()).unwrap();
     let texture_creator = canvas.texture_creator();
-    let mut texture=texture_creator.create_texture_streaming(PixelFormatEnum::RGB24,720,720)
+    let mut texture=texture_creator.create_texture_streaming(PixelFormatEnum::RGB24,700,700)
         .map_err(|e|e.to_string()).unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
@@ -122,10 +124,10 @@ fn main() {
 
         texture.with_lock(None,|buffer,pitch|{
             let frame_buf = r.frame_buffer();
-           for y in 0..720{
+           for y in 0..700{
                let row_offset = y*pitch;
-               let frame_row_offset = y*720;
-               for x in 0..720{
+               let frame_row_offset = y*700;
+               for x in 0..700{
                    let offset = row_offset + x*3;
                    let frame_color = frame_buf[frame_row_offset+x];
                    buffer[offset] = frame_color.x as u8;
